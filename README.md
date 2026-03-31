@@ -93,3 +93,35 @@ To install the compressed module to the system's kernel module, run in terminal
 ```
 make module_install
 ```
+
+### WiFi only (no Bluetooth)
+
+If you only need WiFi, skip `fix_my_wifi.sh` and run these commands manually:
+
+```bash
+# 1. Install dependencies
+sudo apt install build-essential linux-headers-$(uname -r) bc zstd
+
+# 2. Compile and install
+cd latest/
+make module_compile
+make module_compress
+sudo make module_install
+
+# 3. Load modules
+sudo modprobe cfg80211
+sudo modprobe mac80211
+sudo insmod mt76.ko
+sudo insmod mt76-connac-lib.ko
+sudo insmod mt792x-lib.ko
+sudo insmod mt7921/mt7921-common.ko
+sudo insmod mt7921/mt7921e.ko
+```
+
+To make WiFi persistent across reboots, create a systemd service that runs the `insmod` commands above on startup.
+
+### Kernel < 6.19 compatibility
+
+The `latest/` sources require kernel 6.19 or newer by default due to the Airoha NPU offloading header (`linux/soc/airoha/airoha_offload.h`). This repository includes a fix that guards that header behind a kernel version check, so compilation on kernels 6.17 and above is supported.
+
+If you are on **kernel 6.17**, make sure you have pulled the latest version of this repository before compiling.
