@@ -811,10 +811,12 @@ mt76_dma_alloc_queue(struct mt76_dev *dev, struct mt76_queue *q,
 
 	if (mt76_queue_is_wed_rro_ind(q))
 		size = sizeof(struct mt76_wed_rro_desc);
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 19, 0)
 	else if (mt76_queue_is_npu_tx(q))
 		size = sizeof(struct airoha_npu_tx_dma_desc);
 	else if (mt76_queue_is_npu_rx(q))
 		size = sizeof(struct airoha_npu_rx_dma_desc);
+#endif
 	else
 		size = sizeof(struct mt76_desc);
 
