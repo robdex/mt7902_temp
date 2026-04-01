@@ -171,6 +171,24 @@ sudo modprobe mt7921e
 
 After step 6, the stock kernel driver will be active again.
 
+### After a kernel update
+
+The custom modules are installed directly into the running kernel's module directory (`/lib/modules/$(uname -r)/...`), so they survive reboots without any extra steps.
+
+> **Currently compiled for:** `6.17.0-061700-generic`
+
+However, if `apt upgrade` installs a **new kernel version**, the new kernel will have its own separate module directory and will fall back to the stock (broken) driver. To check if a kernel update is pending:
+
+```bash
+apt list --upgradable 2>/dev/null | grep linux-modules
+```
+
+If a new kernel appears, after rebooting into it simply re-run the fix script from the repository directory:
+
+```bash
+sudo bash fix_my_wifi.sh
+```
+
 ### Kernel < 6.19 compatibility
 
 The `latest/` sources require kernel 6.19 or newer by default due to the Airoha NPU offloading header (`linux/soc/airoha/airoha_offload.h`). This repository includes a fix that guards that header behind a kernel version check, so compilation on kernels 6.17 and above is supported.
